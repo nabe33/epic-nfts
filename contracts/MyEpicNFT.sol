@@ -1,6 +1,6 @@
 // MyEpicNFT.sol
 // SPDX-License-Identifier: MIT
-// 2023/1/19 T. Watanabe
+// 2023/1/19(&2/6) T. Watanabe
 
 pragma solidity ^0.8.17;
 
@@ -14,7 +14,7 @@ import "hardhat/console.sol";
 import { Base64 } from "./libraries/Base64.sol";
 
 // importしたOpenZeppelinのコントラクトを継承して
-// 継承したコントラクトのメソッドにアクセスできるようになる
+// 継承したコントラクトのメソッドにアクセスできるようになる．ERC721=NFT
 contract MyEpicNFT is ERC721URIStorage {
   // OpenZeppelinがtokenIdsを簡単に追跡するために提供するライブラリを呼び出す
   using Counters for Counters.Counter;
@@ -30,11 +30,12 @@ contract MyEpicNFT is ERC721URIStorage {
   string[] secondWords = ["Red", "White", "Yellow", "Green", "Black", "Blue", "Transparent", "Violet", "Orange", "Purple"];
   string[] thirdWords = ["Boy", "Girl", "Dog", "Cat", "Pig", "Flower", "Woods", "Cloud", "Osean", "Montains"];
 
+
   // event設定
   event NewEpicNFTMinted(address sender, uint256 tokenId);
 
   // NFTトークンの名前とそのシンボルを渡す
-  constructor() ERC721 ("SquareNFT", "SQUARE") {
+  constructor() ERC721 ("nabeNFT", "nabe") {
     console.log("This is my NFT contract.");
   }
 
@@ -45,7 +46,7 @@ contract MyEpicNFT is ERC721URIStorage {
 
   // 各配列からランダムに単語を選ぶ関数を3つ作成
 
-  // pickRandomFirstWords関数は最初の単語を選ぶ
+  // pickRandomFirstWords関数は3セットの最初の単語を選ぶ
   function pickRandomFirstWord(uint256 tokenId) public view returns (string memory) {
     // seedとなるrandを作成
     uint256 rand = random(string(abi.encodePacked("FIRST_WORD", Strings.toString(tokenId))));
@@ -56,28 +57,31 @@ contract MyEpicNFT is ERC721URIStorage {
     return firstWords[rand];
   }
 
-  // pickRandomSecondWords関数は最初の単語を選ぶ
+  // pickRandomSecondWords関数は3セットの2番目の単語を選ぶ
   function pickRandomSecondWord(uint256 tokenId) public view returns (string memory) {
     uint256 rand = random(string(abi.encodePacked("SECOND_WORD", Strings.toString(tokenId))));
     rand = rand % secondWords.length;
     return secondWords[rand];
   }
 
-  // pickRandomThirdWords関数は最初の単語を選ぶ
+  // pickRandomThirdWords関数は3セットの3番目の単語を選ぶ
   function pickRandomThirdWord(uint256 tokenId) public view returns (string memory) {
     uint256 rand = random(string(abi.encodePacked("THIRD_WORD", Strings.toString(tokenId))));
     rand = rand % thirdWords.length;
     return thirdWords[rand];
   }
 
-  // ユーザがNFTを取得するために実行する関数
+  // ************* ************* ************* *************
+  // ユーザがNFTを取得するために実行する関数 
   function makeAnEpicNFT() public {
     // 現在のtokenId（0から始まる）を取得
     uint256 newItemId = _tokenIds.current();
     
     // MintできるNFTの数を制限
+    console.log("**********************");
     console.log("newItemId: ", newItemId);
-    if ( newItemId > 2 ) { return; }
+    if ( newItemId >= 5 ) { return; }
+    console.log("Still lower than allowed Mint numbers");
 
     // 3つの配列からそれぞれ1単語をランダムに取り出す
     string memory first = pickRandomFirstWord(newItemId);
@@ -100,7 +104,7 @@ contract MyEpicNFT is ERC721URIStorage {
             '{"name": "',
             // NFTのタイトル（生成された単語が入る場所）
             combinedWord,
-            '", "description": "A highly acclaimed collection of squares.", "image": "data:image/svg+xml;base64,',
+            '", "description": "A highly acclaimed NFT collection of squares.", "image": "data:image/svg+xml;base64,',
             // SVGをbase64でエンコードした結果を返す
             Base64.encode(bytes(finalSvg)),
             '"}'
@@ -121,7 +125,7 @@ contract MyEpicNFT is ERC721URIStorage {
     // msg.senderを使ってNFTを送信者にMint
     _safeMint(msg.sender, newItemId);
 
-    //tokenURLは後で設定，仮引数を入れておく
+    //tokenURLを設定
     _setTokenURI(newItemId, finalTokenUri);
     //_setTokenURI(newItemId, "data:application/json;base64,ewogICJuYW1lIjogIkVwaWNOZnRDcmVhdG9yIiwKICAiZGVzY3JpcHRpb24iOiAiVGhlIGhpZ2hseSBhY2NsYWltZWQgc3F1YXJlIGNvbGxlY3Rpb24iLAogICJpbWFnZSI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJad29nSUhodGJHNXpQU0pvZEhSd09pOHZkM2QzTG5jekxtOXlaeTh5TURBd0wzTjJaeUlLSUNCd2NtVnpaWEoyWlVGemNHVmpkRkpoZEdsdlBTSjRUV2x1V1UxcGJpQnRaV1YwSWdvZ0lIWnBaWGRDYjNnOUlqQWdNQ0F6TlRBZ016VXdJZ28rQ2lBZ1BITjBlV3hsUGdvZ0lDQWdMbUpoYzJVZ2V3b2dJQ0FnSUNCbWFXeHNPaUIzYUdsMFpUc0tJQ0FnSUNBZ1ptOXVkQzFtWVcxcGJIazZJSE5sY21sbU93b2dJQ0FnSUNCbWIyNTBMWE5wZW1VNklERTBjSGc3Q2lBZ0lDQjlDaUFnUEM5emRIbHNaVDRLSUNBOGNtVmpkQ0IzYVdSMGFEMGlNVEF3SlNJZ2FHVnBaMmgwUFNJeE1EQWxJaUJtYVd4c1BTSmliR0ZqYXlJZ0x6NEtJQ0E4ZEdWNGRBb2dJQ0FnZUQwaU5UQWxJZ29nSUNBZ2VUMGlOVEFsSWdvZ0lDQWdZMnhoYzNNOUltSmhjMlVpQ2lBZ0lDQmtiMjFwYm1GdWRDMWlZWE5sYkdsdVpUMGliV2xrWkd4bElnb2dJQ0FnZEdWNGRDMWhibU5vYjNJOUltMXBaR1JzWlNJS0lDQStDaUFnSUNCRmNHbGpUbVowUTNKbFlYUnZjZ29nSUR3dmRHVjRkRDRLUEM5emRtYysiCn0=");
     //_setTokenURI(newItemId, "https://api.npoint.io/1de1805e61c8b6d38faa");

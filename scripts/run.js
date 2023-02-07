@@ -7,13 +7,25 @@ const main = async () => {
   const nftContract = await nftContractFactory.deploy();
   // コントラクトがMintされ，ローカルのブロックチェーンにdeployされるまで待つ
   await nftContract.deployed();
-  console.log("Contract deployes to:", nftContract.address);
+  console.log("run.js::Contract deployes to:", nftContract.address);
 
   // makeAnEpicNFT関数を呼び出すとNFTがMINTされる
   let txn = await nftContract.makeAnEpicNFT();
   // Mintingが仮想マイナーによって承認されるのを待つ
   await txn.wait();
   // makeAnEpicNFT関数をもう一度呼び出す．NFTがまたMINTされる
+  txn = await nftContract.makeAnEpicNFT();
+  // Mintingが仮想マイナーによって承認されるのを待つ
+  await txn.wait();
+  // makeAnEpicNFT関数を3回目に呼び出す．NFTがまたMINTされる
+  txn = await nftContract.makeAnEpicNFT();
+  // Mintingが仮想マイナーによって承認されるのを待つ
+  await txn.wait();
+  // makeAnEpicNFT関数を4回目に呼び出す．NFTがまたMINTされる
+  txn = await nftContract.makeAnEpicNFT();
+  // Mintingが仮想マイナーによって承認されるのを待つ
+  await txn.wait();
+  // makeAnEpicNFT関数を5回目に呼び出す．これは生成数制限で拒否されるはず
   txn = await nftContract.makeAnEpicNFT();
   // Mintingが仮想マイナーによって承認されるのを待つ
   await txn.wait();
