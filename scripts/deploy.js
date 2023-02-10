@@ -15,16 +15,13 @@ const main = async () => {
   await nftContract.deployed();
   console.log("Contract deployes to:", nftContract.address);
 
+  /*
   // makeAnEpicNFT関数を呼び出すとNFTがMINTされる
   let txn = await nftContract.makeAnEpicNFT();
   // Mintingが仮想マイナーによって承認されるのを待つ
   await txn.wait();
-  console.log("Minted NFT #1");
-  // // makeAnEpicNFT関数をもう一度呼び出す．NFTがまたMINTされる
-  //txn = await nftContract.makeAnEpicNFT();
-  // // Mintingが仮想マイナーによって承認されるのを待つ
-  //await txn.wait();
-  //console.log("Minted NFT #2");
+  console.log("the 1st Minted NFT");
+  */
 };
 
 // エラー処理

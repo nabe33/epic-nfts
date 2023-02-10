@@ -1,6 +1,6 @@
 // MyEpicNFT.sol
 // SPDX-License-Identifier: MIT
-// 2023/1/19(&2/6) T. Watanabe
+// 2023/1/19(&2/6,10) T. Watanabe
 
 pragma solidity ^0.8.17;
 
@@ -28,7 +28,7 @@ contract MyEpicNFT is ERC721URIStorage {
   // 3つの配列 string[]にランダムな単語を設定
   string[] firstWords = ["Big", "Small", "High", "Low", "Wide", "Narrow", "Giant", "Tiny", "Fast", "Slow"];
   string[] secondWords = ["Red", "White", "Yellow", "Green", "Black", "Blue", "Transparent", "Violet", "Orange", "Purple"];
-  string[] thirdWords = ["Boy", "Girl", "Dog", "Cat", "Pig", "Flower", "Woods", "Cloud", "Osean", "Montains"];
+  string[] thirdWords = ["Boy", "Girl", "Dog", "Cat", "Pig", "Flower", "Woods", "Cloud", "Osean", "Mountains"];
 
 
   // event設定
@@ -71,8 +71,16 @@ contract MyEpicNFT is ERC721URIStorage {
     return thirdWords[rand];
   }
 
+
   // ************* ************* ************* *************
-  // ユーザがNFTを取得するために実行する関数 
+  // ユーザ(フロントエンド)がNFTのミント数を取得するためのgetter関数
+  function getMintCounter() public view returns (uint) {
+    uint256 newMintId = _tokenIds.current();
+    console.log("getMintCounter/newMintId; ", newMintId);
+    return newMintId; // newItemId
+  }
+
+  // ユーザが(フロントエンド)NFTを取得するために実行する関数 
   function makeAnEpicNFT() public {
     // 現在のtokenId（0から始まる）を取得
     uint256 newItemId = _tokenIds.current();
@@ -80,8 +88,8 @@ contract MyEpicNFT is ERC721URIStorage {
     // MintできるNFTの数を制限
     console.log("**********************");
     console.log("newItemId: ", newItemId);
-    if ( newItemId >= 5 ) { return; }
-    console.log("Still lower than allowed Mint numbers");
+    if ( newItemId >= 10 ) { return; }
+    console.log("Still lower than the allowed Mint numbers");
 
     // 3つの配列からそれぞれ1単語をランダムに取り出す
     string memory first = pickRandomFirstWord(newItemId);
@@ -92,9 +100,9 @@ contract MyEpicNFT is ERC721URIStorage {
 
     // 3つの単語を連結してSVGを完成させる
     string memory finalSvg = string(abi.encodePacked(baseSvg, combinedWord,"</text></svg>"));
-    console.log("\n------ SVG data -------");
-    console.log(finalSvg);
-    console.log("-----------------------\n");
+    //console.log("\n------ SVG data -------");
+    //console.log(finalSvg);
+    //console.log("-----------------------\n");
 
     // JSONファイルを所定の位置に取得してbase64としてエンコード
     string memory json = Base64.encode(
@@ -118,9 +126,9 @@ contract MyEpicNFT is ERC721URIStorage {
       abi.encodePacked("data:application/json;base64,", json)
     );
 
-    console.log("\n----- Token URI -----");
-    console.log(finalTokenUri);
-    console.log("---------------------\n");
+    //console.log("\n----- Token URI -----");
+    //console.log(finalTokenUri);
+    //console.log("---------------------\n");
 
     // msg.senderを使ってNFTを送信者にMint
     _safeMint(msg.sender, newItemId);
